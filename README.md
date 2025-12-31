@@ -94,7 +94,9 @@ IDP follows a streamlined architecture managed via a single Docker Compose defin
 
 1.  **Ingestion:** Files are hashed (SHA256) for deduplication and MIME-typed using `python-magic`.
 2.  **Normalization:**
-    - **PDF:** Hybrid approach using PyMuPDF for text and OCR (PaddleOCR/Tesseract) for images. Tables are reconstructed using `pdfplumber`.
+    - **Advanced Parsing (SOTA):** Integrated support for **MinerU (2.0+)** and **Docling** for high-fidelity PDF-to-Markdown conversion. These parsers excel at reconstructing complex tables, mathematical formulas, and multi-column layouts.
+    - **Hybrid Fallback:** Automatically switches between parsers based on content type or user preference (`PARSE_METHOD=auto|mineru|docling`).
+    - **Legacy Support:** Robust fallbacks using PyMuPDF and Tesseract OCR for standard documents.
     - **Office:** `mammoth` for DOCX, `python-pptx` for slides.
 3.  **Extraction:** Content is parsed into semantic blocks (Header, Paragraph, Table) with unique IDs.
 4.  **Chunking:** Strategies vary by content type (e.g., "Layout-Aware" for tables, "Section-Based" for narrative text). Metadata is injected into every chunk.
