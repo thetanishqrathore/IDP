@@ -12,14 +12,15 @@
 ## 🚀 Key Features
 
 ### 🧠 Advanced RAG Architecture
-- **Hybrid Search:** Combines **Vector Search** (semantic understanding) with **Keyword Search** (BM25) using Reciprocal Rank Fusion (RRF) for superior retrieval accuracy.
+- **Hybrid Search:** Combines **Vector Search** (semantic understanding) with **Keyword Search** (BM25) using Reciprocal Rank Fusion (RRF) for superior retrieval accuracy. This ensures specific identifiers (like Invoice IDs or Dates) are retrieved just as effectively as semantic concepts.
 - **Context-Aware Chunking:** Intelligently splits documents based on layout and semantic structure, preserving header hierarchies to solve the "lost context" problem.
 - **Graph-Based Expansion:** Boosts relevance by retrieving structurally related content (e.g., finding the paragraph *immediately following* a relevant header).
 - **Citations & Grounding:** Generates answers with direct citations to source documents and calculates a "Groundedness Score" to detect hallucinations.
 - **Visual Citations:** Interactive citation badges in the UI link directly to the source page and text block.
+- **Hallucination Control:** Implements a strict *"Groundedness Scoring"* system. Every answer includes direct citations to source paragraphs and a confidence score.
 
 ### ⚡ Powerful Processing Pipeline
-- **Universal Ingestion:** Accepts files via UI upload, API, or direct URL fetch (ideal for webhooks).
+- **Universal Ingestion:** Accepts files via UI upload, API, or direct URL fetch (webhooks ready).
 - **Canonical Normalization:** Converts all inputs into a standardized **Markdown-first** format, optimizing for LLM token usage while preserving table structures.
 - **Asynchronous Processing:** Built-in lightweight job worker ensures high-volume document processing happens in the background without blocking the UI.
 - **Robust Agents:** Dedicated services for Ingestion, Normalization, Extraction, Chunking, and Embedding.
@@ -27,11 +28,15 @@
 ### 🛠️ Developer & Automation Friendly
 - **Headless API Engine:** Fully documented FastAPI backend secured with Bearer tokens (`IDP_API_KEY`).
 - **OpenAI-Compatible Endpoint:** Drop-in replacement for GPT-4 in existing tools (`/v1/chat/completions`).
-- **Integration Ready:** Dedicated endpoints for n8n, Zapier, and other automation platforms.
+- **"Lego-Like" Modularity:** Designed for low-code automation.
+    - **Google Drive / OneDrive:** Trigger ingestion when a file is added to a specific folder.
+    - **Email:** Automatically process attachments sent to a dedicated inbox.
+    - **Telegram / Slack:** Build chat bots that query your knowledge base in real-time.
+- **Integration Ready:** Dedicated endpoints (`/ingest/url`) for n8n, Zapier, and active automation platforms.
 - **Local LLM Support:** Fully compatible with Ollama and local embedding models for privacy-focused deployments.
 
 ### 🎨 Premium UI Experience
-- **Gemini-Inspired Design:** Dark mode interface with premium glassmorphism, rounded pill-shaped messages, and refined typography.
+- **Modern chat Design:** Dark mode interface with premium glassmorphism, rounded pill-shaped messages, and refined typography.
 - **Reader View:** A clean, responsive "Source Drawer" that renders retrieved context in readable HTML, not just raw text.
 - **Real-time Insights:** Visual execution streams, job tracking, and pipeline stage visualization.
 
@@ -104,6 +109,18 @@ IDP follows a streamlined architecture managed via a single Docker Compose defin
 6.  **Retrieval & Generation:** Queries are expanded, searched across vectors and keywords, re-ranked, and passed to the LLM for final answer synthesis.
 
 ---
+
+## 🤝 Services & Support
+
+**Need a Custom Enterprise Deployment?**
+
+IDP is the open-source core of our document intelligence platform. For custom integrations, high-availability setups, or managed support, contact the core engineering team at **RaeonLabs**.
+
+* **Custom Connectors:** Integration with SAP, Salesforce, or proprietary data lakes.
+* **Managed Infrastructure:** Fully managed AWS/Azure deployments.
+* **SLA Support:** 24/7 enterprise support.
+
+[**Contact RaeonLabs**](https://www.raeonlabs.com)
 
 ## 🛡️ License
 
