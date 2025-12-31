@@ -1,0 +1,10 @@
+# Replace with your real domains
+api.your-domain.com {
+  reverse_proxy 127.0.0.1:8000
+}
+
+# MinIO S3 API — required for presigned URLs to open
+s3.your-domain.com {
+  reverse_proxy 127.0.0.1:9000
+}
+

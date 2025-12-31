@@ -1,0 +1,17 @@
+[Unit]
+Description=RAG Stack (Docker Compose)
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+# Adjust to where you clone the repo on the VM
+WorkingDirectory=/opt/rag
+RemainAfterExit=yes
+Environment=COMPOSE_PROJECT_NAME=rag
+ExecStart=/bin/bash -lc '/opt/rag/deploy/run.sh up'
+ExecStop=/bin/bash -lc '/opt/rag/deploy/cloud/run.sh down'
+TimeoutStartSec=0
+
+[Install]
+WantedBy=multi-user.target

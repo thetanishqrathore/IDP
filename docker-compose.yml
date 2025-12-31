@@ -1,0 +1,115 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: deploy/cloud/Dockerfile
+    platform: linux/amd64
+    container_name: rag_api
+    # Production: Expose on port 80
+    ports:
+      - "80:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+      minio:
+        condition: service_started
+      qdrant:
+        condition: service_started
+    environment:
+      # app
+      APP_ENV: ${APP_ENV}
+      APP_VERSION: ${APP_VERSION}
+      REGION: ${REGION}
+      TENANT_ID: ${TENANT_ID}
+
+      # postgres
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: ${POSTGRES_DB}
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+
+      # object storage (MinIO)
+      S3_ENDPOINT: http://minio:9000
+      # Public endpoint used to generate browser-accessible presigned URLs
+      # Allow overriding in cloud via env
+      S3_PUBLIC_ENDPOINT: ${S3_PUBLIC_ENDPOINT:-http://localhost:9000}
+      S3_BUCKET: ${S3_BUCKET}
+      S3_CANONICAL_BUCKET: rag-canonical
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+
+      # qdrant (vector DB)
+      QDRANT_URL: http://qdrant:6333
+      QDRANT_COLLECTION: chunks_te3large_v1
+      QDRANT_DISTANCE: cosine
+      EMBEDDING_DIM: "3072"
+
+      # providers
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      GEN_BASE_URL: ${GEN_BASE_URL}
+      GEN_MODEL: ${GEN_MODEL}
+
+      # ingest guardrails
+      MAX_FILES_PER_REQUEST: "10"
+      MAX_FILE_MB: "50"
+      ALLOWED_MIME_PREFIXES: "application/pdf,text/plain,text/html,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/png,image/jpeg,image/webp"
+
+      # advanced parsing / MinerU configuration
+      MINERU_HOME: ${MINERU_HOME:-/models/mineru}
+      MINERU_DOWNLOAD_MODELS: ${MINERU_DOWNLOAD_MODELS:-true}
+      PARSE_METHOD: ${PARSE_METHOD:-auto}
+      PARSE_AUTO_OCR_FALLBACK: ${PARSE_AUTO_OCR_FALLBACK:-true}
+      PARSE_SPARSE_TEXT_THRESHOLD: ${PARSE_SPARSE_TEXT_THRESHOLD:-400}
+      
+      # CORS
+      CORS_ALLOW_ORIGINS: ${CORS_ALLOW_ORIGINS:-}
+    restart: unless-stopped
+
+  db:
+    image: postgres:16
+    container_name: rag_db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    # Production: No external ports exposed for DB
+    ports: []
+    restart: unless-stopped
+
+  minio:
+    image: minio/minio:latest
+    container_name: rag_minio
+    command: server /data --console-address ":9001"
+    # Production: Expose API (9000), keep Console (9001) hidden/optional
+    ports:
+      - "9000:9000"
+      # - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    volumes:
+      - minio:/data
+    restart: unless-stopped
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: rag_qdrant
+    # Production: No external ports exposed for Qdrant
+    ports: []
+    volumes:
+      - qdrant_storage:/qdrant/storage
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  minio:
+  qdrant_storage:

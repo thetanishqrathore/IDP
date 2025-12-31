@@ -1,0 +1,35 @@
+{
+  "name": "idp-ui",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "build:copy": "vite build && rm -rf ../app/ui && mkdir -p ../app/ui && cp -R dist/* ../app/ui/",
+    "preview": "vite preview --port 5173",
+    "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,css}\""
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "marked": "^12.0.2",
+    "dompurify": "^3.1.6",
+    "lucide-react": "^0.452.0",
+    "react-resizable-panels": "^2.0.21",
+    "framer-motion": "^11.5.5"
+  },
+  "devDependencies": {
+    "vite": "^5.4.0",
+    "tailwindcss": "^3.4.10",
+    "postcss": "^8.4.41",
+    "autoprefixer": "^10.4.19",
+    "eslint": "^8.57.0",
+    "eslint-plugin-react": "^7.35.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "prettier": "^3.3.3",
+    "tailwind-scrollbar": "^3.1.0",
+    "@tailwindcss/typography": "^0.5.15"
+  }
+}
